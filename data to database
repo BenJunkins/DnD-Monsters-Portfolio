@@ -19,14 +19,15 @@ def get_data():
         for monster in monsters_json["results"]:
             monster_urls.append(monster["url"])
 
-        return monster_urls
+        for url in monster_urls:
+            print(url)
     
     else:
         print(f"Error: {response.status_code}")
 
 def main():
     get_data()
-    print(monster_urls)
+
 
 if __name__ == "__main__":
     main()
