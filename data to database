@@ -1,0 +1,22 @@
+import requests
+import json
+import psycopg2
+
+def get_data():
+    
+    url = "https://www.dnd5eapi.co/api/2014/monsters"
+    headers = {
+        "Accept": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        spells_data = response.json()
+        return spells_data
+
+def main():
+    
+
+if __name__ == "__main__":
+    main()
