@@ -12,11 +12,20 @@ def get_data():
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        monsters_data = response.json()
-        return monsters_data
+
+        monster_urls = []
+
+        monsters_json = response.json()
+        for monster in monsters_json["results"]:
+            monster_urls.append(monster["url"])
+
+        return monster_urls
+    
+    else:
+        print(f"Error: {response.status_code}")
 
 def main():
-    
+    get_data()
 
 if __name__ == "__main__":
     main()
