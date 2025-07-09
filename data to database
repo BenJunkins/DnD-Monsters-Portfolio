@@ -17,17 +17,14 @@ def get_data():
 
         monsters_json = response.json()
         for monster in monsters_json["results"]:
-            monster_urls.append(monster["url"])
-
-        for url in monster_urls:
-            print(url)
-    
+            monster_urls.append("https://www.dnd5eapi.co" + monster["url"])
+            print(monster)
+            
     else:
         print(f"Error: {response.status_code}")
 
 def main():
     get_data()
-
 
 if __name__ == "__main__":
     main()
