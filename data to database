@@ -4,7 +4,6 @@ import psycopg2
 import pandas as pd
 
 def get_urls():
-    
     url = "https://www.dnd5eapi.co/api/2014/monsters"
     headers = {
         "Accept": "application/json"
@@ -16,8 +15,8 @@ def get_urls():
 
         monster_urls = []
 
-        monsters_json = response.json()
-        for monster in monsters_json["results"]:
+        monsters_url_json = response.json()
+        for monster in monsters_url_json["results"]:
             monster_urls.append("https://www.dnd5eapi.co" + monster["url"])
         
         return monster_urls
@@ -26,7 +25,13 @@ def get_urls():
         print(f"Error: {response.status_code}")
 
 def get_data():
-    urls = get_urls()
+    monster_urls = get_urls()
+
+    for url in monster_urls:
+        response = requests.get(url)
+        if response.status_code == 200:
+            read_df = pd.read_json(response.json())
+            
 
 
 def main():
