@@ -4,6 +4,9 @@ import psycopg2
 import pandas as pd
 import io
 
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", 1000)
+
 def get_urls():
     url = "https://www.dnd5eapi.co/api/2014/monsters"
     headers = {
@@ -11,15 +14,11 @@ def get_urls():
     }
 
     response = requests.get(url, headers=headers)
-
     if response.status_code == 200:
-
         monster_urls = []
-
         monsters_url_json = response.json()
         for monster in monsters_url_json["results"]:
             monster_urls.append("https://www.dnd5eapi.co" + monster["url"])
-        
         return monster_urls
             
     else:
@@ -35,9 +34,11 @@ def get_data():
     if response.status_code == 200:
         read_df = pd.read_json(
             io.StringIO(response.text),
-            orient='records'       
+            orient="columns",
+            typ="series"       
         )
-        return read_df
+        df = pd.DataFrame(read_df).T
+        print(df)
             
 
 
