@@ -2,6 +2,7 @@ import requests
 import json
 import psycopg2
 import pandas as pd
+import io
 
 def get_urls():
     url = "https://www.dnd5eapi.co/api/2014/monsters"
@@ -26,16 +27,22 @@ def get_urls():
 
 def get_data():
     monster_urls = get_urls()
-
-    for url in monster_urls:
-        response = requests.get(url)
-        if response.status_code == 200:
-            read_df = pd.read_json(response.json())
+    headers = {
+        "Accept": "application/json"
+    }
+    
+    response = requests.get(monster_urls[0], headers=headers)
+    if response.status_code == 200:
+        read_df = pd.read_json(
+            io.StringIO(response.text),
+            orient='records'       
+        )
+        return read_df
             
 
 
 def main():
-    get_urls()
+    get_data()
 
 if __name__ == "__main__":
     main()
