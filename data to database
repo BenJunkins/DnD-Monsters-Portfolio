@@ -24,23 +24,63 @@ def get_urls():
     else:
         print(f"Error: {response.status_code}")
 
+def get_fields():
+    monster_urls = get_urls()
+    headers = {
+        "Accept": "application/json"
+    }
+
+    monster_fields_set = set()
+    for url in monster_urls:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            set(response.json().keys())
+        
+        else:
+            print(f"Error in get_fields get request: {response.status_code}")
+            break
+
+        monster_fields_set = (monster_fields_set | set(response.json().keys()))
+        
+    
+    monster_fields_list = list(monster_fields_set)
+    special_abilities = ["special_abilities"]
+    actions = ["actions"]
+    legendary_actions = ["legendary_actions"]
+
+    if special_abilities in monster_fields_list:
+        monster_fields_list.remove("special_abilities")
+    elif actions in monster_fields_list:
+        monster_fields_list.remove("actions")
+    elif legendary_actions in monster_fields_list:
+        monster_fields_list.remove("legendary_actions")
+    
+    monsters = monster_fields_list.copy()
+
+    return monsters, special_abilities, actions, legendary_actions
+
 def get_data():
     monster_urls = get_urls()
     headers = {
         "Accept": "application/json"
     }
-    
-    response = requests.get(monster_urls[0], headers=headers)
-    if response.status_code == 200:
-        read_df = pd.read_json(
-            io.StringIO(response.text),
-            orient="columns",
-            typ="series"       
-        )
-        df = pd.DataFrame(read_df).T
-        print(df)
-            
+    monster_fields, special_abilities, actions, legendary_actions = get_fields()
 
+
+    for url in monster_urls:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            monster_series = pd.read_json(
+                io.StringIO(response.text),
+                orient="columns",
+                typ="series"       
+            )
+            monster_df = pd.DataFrame(monster_series).T
+            monsters_df
+        
+        else:
+            print(f"Error in get_data get request: {response.status_code}")
+            break
 
 def main():
     get_data()
