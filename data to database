@@ -1,11 +1,10 @@
+import re
 import requests
 import json
 import psycopg2
 import pandas as pd
 import io
-
-pd.set_option("display.max_columns", None)
-pd.set_option("display.width", 1000)
+import openpyxl
 
 def get_urls():
     url = "https://www.dnd5eapi.co/api/2014/monsters"
@@ -34,13 +33,11 @@ def get_fields():
     for url in monster_urls:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            set(response.json().keys())
+            monster_fields_set = (monster_fields_set | set(pd.json_normalize(response.json()).columns))
         
         else:
             print(f"Error in get_fields get request: {response.status_code}")
             break
-
-        monster_fields_set = (monster_fields_set | set(response.json().keys()))
         
     
     monster_fields_list = list(monster_fields_set)
@@ -48,12 +45,12 @@ def get_fields():
     actions = ["actions"]
     legendary_actions = ["legendary_actions"]
 
-    if special_abilities in monster_fields_list:
-        monster_fields_list.remove("special_abilities")
-    elif actions in monster_fields_list:
-        monster_fields_list.remove("actions")
-    elif legendary_actions in monster_fields_list:
-        monster_fields_list.remove("legendary_actions")
+    if special_abilities[0] in monster_fields_list:
+        monster_fields_list.remove(special_abilities[0])
+    if actions[0] in monster_fields_list:
+        monster_fields_list.remove(actions[0])
+    if legendary_actions[0] in monster_fields_list:
+        monster_fields_list.remove(legendary_actions[0])
     
     monsters = monster_fields_list.copy()
 
@@ -66,22 +63,19 @@ def get_data():
     }
     monster_fields, special_abilities, actions, legendary_actions = get_fields()
 
-
+    monster_df = pd.DataFrame(columns=monster_fields + special_abilities + actions + legendary_actions)
+    
     for url in monster_urls:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            monster_series = pd.read_json(
-                io.StringIO(response.text),
-                orient="columns",
-                typ="series"       
-            )
-            monster_df = pd.DataFrame(monster_series).T
-            monsters_df
+            monster_df = pd.concat([monster_df, pd.json_normalize(response.json())], copy=False)
         
         else:
             print(f"Error in get_data get request: {response.status_code}")
             break
 
+    monster_df.to_excel("monsters.xlsx")
+    
 def main():
     get_data()
 
