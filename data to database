@@ -1,6 +1,4 @@
-import re
 import requests
-import json
 import psycopg2
 import pandas as pd
 import io
@@ -77,13 +75,28 @@ def get_data():
     return monster_df
 
 def clean_data(monster_df):
+    separate_monster_tables_c = ["reactions_df", "condition_immunities_df", "damage_immunities_df", "damage_resistances_df", 
+                               "forms_df", "proficiencies_df", "special_abilities_df", "legendary_actions_df", "actions_df"]
     
+    restructured_data = {}
+
+    monster_dfs = pd.DataFrame(columns=separate_monster_tables_c)
+
+    for df in separate_monster_tables_c:
+        restructured_data[df] = monster_df.pop(df.replace("_df", ""))
     
+    restructured_data["attributes"] = monster_df
+
+    monster_dfs = pd.DataFrame([restructured_data])
+
+    return monster_dfs
+
 def main():
     monster_df = get_data()
-    monster_df_cleaned = clean_data(monster_df)
+    monster_dfs_restructured = clean_data(monster_df)
 
-
+    for df in monster_dfs_restructured.columns:
+        monster_dfs_restructured.loc[0, df].to_excel(f"{df}.xlsx")
 
 if __name__ == "__main__":
     main()
