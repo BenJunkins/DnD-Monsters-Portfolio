@@ -1,5 +1,5 @@
 # DnD Monster Portfolio
-This is a side project that I work on at a leisurley pace. I am including it in my portfolio because its fun to work on, and it covers a wide skillset that every data analyst should be able to demonstrate.
+This is a side project that I work on at a leisurely pace. I am including it in my portfolio because its fun to work on, and it covers a wide skillset that every data analyst should be able to demonstrate.
 
 ## Objectives
 1. Show knowledge of io operations by performing effeicient api calls to DnD5eapi.co
